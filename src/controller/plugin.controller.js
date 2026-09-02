@@ -54,7 +54,7 @@ export const AuthanticatePlugin = async (req, res) => {
             },
             process.env.PLUGIN_ACCESS_KEY,
             {
-                expiresIn: "15m"
+                expiresIn: "7d"
             }
         );
 
@@ -69,15 +69,12 @@ export const AuthanticatePlugin = async (req, res) => {
         });
 
     } catch (err) {
+    console.error("Plugin authentication error:", err);
 
-        return res.status(500).json({
-            message:
-                "Internal server error",
-            status: false,
-            error:
-                err.message
-        });
-
-    }
+    return res.status(500).json({
+      message: "Something went wrong. Please try again later.",
+      status: false,
+    });
+  }
 
 };
