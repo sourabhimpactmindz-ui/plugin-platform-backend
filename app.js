@@ -18,7 +18,7 @@ app.use(cors({
 
         const allowedOrigins = [
             "http://localhost:5173",
-            "https://plugin-master-admins.vercel.app"
+            "https://master-admin-azure.vercel.app"
         ];
 
         // Allow permanent domains
