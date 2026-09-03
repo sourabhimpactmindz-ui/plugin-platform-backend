@@ -10,8 +10,33 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-    origin : process.env.FRONT_URL
-}))
+    origin: (origin, callback) => {
+
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        const allowedOrigins = [
+            "http://localhost:5173",
+            "https://plugin-master-admins.vercel.app"
+        ];
+
+        // Allow permanent domains
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        // Allow Vercel deployment URLs
+        if (
+            /^https:\/\/plugin-master-admins.*\.vercel\.app$/.test(origin)
+        ) {
+            return callback(null, true);
+        }
+
+        callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true
+}));
 
 app.use(express.json());
 
