@@ -32,14 +32,37 @@ export const CreateClient = async (req, res) => {
 }
 
 export const GetAllClients = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+
+    const skip = (page - 1) * limit;
     try {
-        const clients = await ClientModel.find();
+        const [clients,total] = await Promise.all([ClientModel.find()
+        .sort({createdAt : 1})
+        .skip(skip)
+        .limit(limit),
+        ClientModel.countDocuments()
+]);
+
+    const totalPages = Math.ceil(total / limit) || 0;
+    
 
         if (!clients || clients.length === 0) {
-            return res.status(200).json({ message: "No clients found", status: false,data:[] })
+            return res.status(200).json({ message: "No clients found", status: false,data:[] ,
+                pagination : {
+                    page,
+                    limit,
+                    total,totalPages
+                }
+             })
         }
 
-        return res.status(200).json({ message: "Client fatched successfully", status: true, data: clients })
+        return res.status(200).json({ message: "Client fatched successfully", status: true, data: clients ,pagination : {
+            page,
+            limit,
+            total,
+            totalPages
+        } })
     } catch (err) {
         return res.status(500).json({ message: "Internal server error", status: false, error: err.message })
     }
