@@ -68,28 +68,51 @@ export const CreateFeature = async (req, res) => {
 // ======================================
 
 export const GetAll = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+
+    const skip = (page - 1) * limit ;
 
     try {
 
-        const allFeature =
-            await FeatureModel
+        const [allFeature , total] = await Promise.all([FeatureModel
                 .find()
-                .sort({ createdAt: 1 });
+                .sort({ createdAt: 1 })
+                .skip(skip)
+                .limit(limit),
+
+                FeatureModel.countDocuments()
+            ]);
+                const totalPages = Math.ceil(total / limit
+        ) || 0;
 
 
         if (allFeature.length === 0) {
             return res.status(200).json({
                 message: "Features not found",
                 status: false,
-                data: []
+                data: [],
+                pagination : {
+                    page,
+                    limit,
+                    total,
+                    totalPages
+                }
             });
         }
 
+   
 
         return res.status(200).json({
             message: "Features fetched successfully",
             status: true,
-            data: allFeature
+            data: allFeature,
+            pagination : {
+                page,
+                limit,
+                total,
+                totalPages
+            }
         });
 
     } catch (err) {
