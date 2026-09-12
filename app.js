@@ -39,9 +39,9 @@ app.use(cors({
 }));
 
 app.use(express.json());
-app.use("/" , (req,res) => {
-    console.log("running")
-})
+app.get("/", (req, res) => {
+    res.send("Backend is running");
+});
 
 app.use("/api" , router,ClientRouter,Featurerouter,PluginRouter , ProjectFeature);
 
